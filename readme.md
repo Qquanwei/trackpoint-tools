@@ -9,8 +9,82 @@
 
 ## API 列表
 
-### before
+所有的API都满足curryable, 所有的trackFn 都不会影响正常逻辑执行。
 
-### after
+### before(trackFn, fn)
 
-### once
+```
+import { before } from 'trackpoint-tools'
+
+class SomeComponent {
+    onClick = before((name) => console.log('seed some ', name))((name) => {
+       // normal
+       console.log('normal click ', name)
+    })
+}
+```
+
+onClick('me')
+
+->
+
+```
+  seed some me
+  normal click me
+```
+
+### after(trackFn, fn)
+
+```
+import { after } from 'trackpoint-tools'
+
+class SomeComponent {
+  onClick = after(() => console.log('send after'))(() => {
+    // normal
+    console.log('normal click')
+  })
+}
+```
+
+onClick
+
+->
+
+```
+    normal click
+    send after
+
+```
+
+
+Using Promise
+
+```
+import { after } from 'trackpoint-tools'
+
+class SomeComponent {
+    onClick = after(() => console.log('send after'))(() => {
+         return ajax.post(...).then(() => {
+             console.log('normal click')
+         })
+    })
+}
+```
+
+onClick
+
+->
+
+```
+    normal click
+    send after
+```
+
+### once(fn)
+
+same as lodash/once
+[lodash/once](https://lodash.com/docs/4.17.4#once)
+
+## 贡献
+
+欢迎fork, 有新的想法可以直接提PR
