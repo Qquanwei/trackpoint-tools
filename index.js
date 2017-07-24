@@ -7,7 +7,7 @@ import {
 } from 'lodash'
 
 function isThenable (f) {
-    return isFunction(f.then)
+    return f && isFunction(f.then)
 }
 function evalWithNoCatch(fn, args) {
     const _r = attempt(fn, args)
