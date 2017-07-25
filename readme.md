@@ -13,6 +13,17 @@
 npm i trackpoint-tools --save
 ```
 
+使用trackpoint-tools你可能会用下面的方式写埋点信息, 完全不侵入原有逻辑
+
+```
+class SomeComponent {
+  @track(composeWith(ms => (element) => ajax.pos(url, {ms, name: element.name}), time))
+  onClick (element) {
+    return element.someMethod()
+  }
+}
+```
+
 ## API 列表
 
 * [before](#before)
@@ -139,13 +150,17 @@ class SomeComponent {
  after
 ```
 
-## <a name="nop"></a> nop()
+### <a name="nop"></a> nop()
 
 do nothing , empty function
 
-## <a name="composeWith"></a> composeWith(convergeFn, [ops])
+### <a name="composeWith"></a> composeWith(convergeFn, [ops])
 
 composeWith 类似after, 主要执行收集执行期间性能的操作
+
+ops会被展开为 `fn -> (...args) -> {}`, 执行顺序为从右到左，如果只有一项操作
+可省略数组直接传入ops函数
+
 
 ```
 class SomeComponent {
@@ -165,7 +180,7 @@ class SomeComponent {
 
 ```
 
-## <a name="time"></a> time(fn) -> (...) -> ms
+### <a name="time"></a> time(fn) -> (...) -> ms
 
 测量普通函数与thenable函数执行时间, 单位毫秒
 
@@ -173,6 +188,12 @@ class SomeComponent {
  time(() => console.log('out'))() // return 1
 ```
 
+
+
+## TL;DR
+
+推荐使用es7的decorator
+大量流程控制虽然为高阶函数, 但实际调用的参数皆为用户输入的参数
 
 ## 贡献
 
