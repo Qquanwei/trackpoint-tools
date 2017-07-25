@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Qquanwei/trackpoint-tools.svg?branch=master)](https://travis-ci.org/Qquanwei/trackpoint-tools)
+
 # 不能再让埋点继续侵入我们的逻辑了，我们需要做点什么
 
 ## trackpoint-tools
