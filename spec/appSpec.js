@@ -1,4 +1,4 @@
-import tp from '..'
+import tp from '../index.js'
 import isFunction from 'lodash/isFunction'
 
 describe('trackpoint nop', function () {

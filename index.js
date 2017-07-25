@@ -1,10 +1,8 @@
-import {
-    once,
-    curry,
-    isFunction,
-    attempt,
-    isError
-} from 'lodash'
+import curry from 'lodash/fp/curry'
+import attempt from 'lodash/fp/attempt'
+import isError from 'lodash/fp/isError'
+import isFunction from 'lodash/fp/isFunction'
+import _once from 'lodash/fp/once'
 import propSet from 'lodash/fp/set'
 
 function isThenable (f) {
@@ -50,10 +48,12 @@ export const track = curry(partical => (target, key, descriptor) => {
 
 // do work nothing
 export const nop = () => {}
+export const once = _once
 
 export default {
     before,
     after,
     track,
-    nop
+    nop,
+    once
 }
