@@ -92,3 +92,89 @@ describe('trackpoint track', function () {
         expect(soldier).toEqual(['trackFn','fn'])
     })
 })
+
+describe('trackpoint compose', function () {
+    it ('should can composeWith function', function () {
+        const nop = tp.nop
+        expect(isFunction(tp.composeWith(() => nop, [() => nop, () => nop]))).toBe(true)
+    })
+
+    it ('should can compose function', function () {
+        const composeWith = tp.composeWith
+        const spy = jasmine.createSpy('fn')
+        let soldier = 0;
+        const composeFn = composeWith(
+            time => (...args) => soldier = time,
+            [
+                (fn) => (...args) => {
+                    fn.apply(null, args);
+                    return 253;
+                }
+            ])(spy)
+
+        //invoke
+        expect(() => composeFn('stub', 'args')).not.toThrow()
+        // fn have been called
+        expect(spy).toHaveBeenCalled()
+        // fn called with correct args
+        expect(spy).toHaveBeenCalledWith('stub', 'args')
+        // trackFn called correct
+        expect(soldier).toEqual(253)
+    })
+
+    it ('should no-side-effect', function () {
+        const composeWith = tp.composeWith
+        const identity = a => a
+
+        const composeFn = composeWith((ms) => (...args) => {
+            expect(args).toEqual([10])
+            expect(ms).toEqual(100)
+        }, (fn) => (...args) => {
+            fn.apply(this, args)
+            return 100
+        })(identity)
+
+        expect(composeFn(10)).toEqual(10)
+    })
+})
+
+describe('trackpoint time', function () {
+    it ('should have time', function () {
+        expect(isFunction(tp.time)).toBe(true)
+    })
+
+    it ('should can test ms', function (done) {
+        const composeWith = tp.composeWith
+        const time = tp.time
+        const after = tp.after
+        const nop = tp.nop
+        const track = tp.track
+
+        const spy = jasmine.createSpy('fn')
+        const fn = (ns) => {
+            spy(ns)
+            return new Promise(resolve => setTimeout(() => resolve(ns), ns))
+        }
+
+        let _MS
+        const printMs = ms => (...args) => _MS = ms
+
+        class SomeComponent {
+            @track(composeWith(printMs, time))
+            onClick (ms) {
+                return fn(ms)
+            }
+        }
+
+        (new SomeComponent).onClick(100).then((ms) => {
+            _MS.then((_MS_) => {
+                expect(spy.calls.count()).toEqual(1)
+                expect(spy).toHaveBeenCalledWith(100)
+                expect(ms).toEqual(100)
+                expect(_MS_ >= 100).toBe(true)
+                expect(_MS_ <= 120).toBe(true)
+                done()
+            })
+        })
+    })
+})

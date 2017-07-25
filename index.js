@@ -2,8 +2,11 @@ import curry from 'lodash/fp/curry'
 import attempt from 'lodash/fp/attempt'
 import isError from 'lodash/fp/isError'
 import isFunction from 'lodash/fp/isFunction'
+import isArray from 'lodash/fp/isArray'
 import _once from 'lodash/fp/once'
 import propSet from 'lodash/fp/set'
+import reduce from 'lodash/fp/reduce'
+import memoize from 'lodash/fp/memoize'
 
 function isThenable (f) {
     return f && isFunction(f.then)
@@ -46,8 +49,48 @@ export const track = curry(partical => (target, key, descriptor) => {
     return propSet('value', partical(descriptor.value), descriptor)
 })
 
+// composeWith convergeFn by ops[array]
+export const composeWith = curry((convergeFn, ops) => {
+    if (isFunction (ops)) {
+        ops = [ops]
+    }
+
+    // type check
+    if (!isFunction(convergeFn) ||!isArray(ops) ) {
+        return console.error('args type incorrect, expect convergeFn is function and ops is array')
+    }
+
+    const compose = reduce(function (acc, i) {
+        if (!acc) {
+            return acc || i
+        }
+        return i(acc)
+    }, null)
+
+
+    return (fn) => (...args) => {
+        const memoizeFn = memoize(fn)
+        const _r = convergeFn(
+            compose(ops)
+                .apply(null, [memoizeFn])
+                .apply(null, args)).apply(this, args)
+        return memoizeFn.apply(this, args)
+    }
+})
+
+export const time = (fn) => (...args) => {
+    const begin = +Date.now()
+    const result = fn.apply(this, args)
+    // result will be cached by memoize, so return new promise
+    if (isThenable(result)) {
+        return result.then(() => +Date.now() - begin)
+    }
+    return +Date.now() - begin
+}
+
 // do work nothing
 export const nop = () => {}
+
 export const once = _once
 
 export default {
@@ -55,5 +98,7 @@ export default {
     after,
     track,
     nop,
-    once
+    once,
+    composeWith,
+    time
 }
