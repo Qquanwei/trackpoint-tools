@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.org/Qquanwei/trackpoint-tools.svg?branch=master)](https://travis-ci.org/Qquanwei/trackpoint-tools)
-
 [![npm](https://img.shields.io/npm/v/trackpoint-tools.svg)](https://www.npmjs.com/package/trackpoint-tools)
 
 
@@ -14,9 +13,15 @@
 
 ## API 列表
 
+* [before](#before)
+* [after](#after)
+* [once](#once)
+* [track](#track)
+
+
 所有的API都满足curryable, 所有的trackFn 都不会影响正常逻辑执行。
 
-### before(trackFn, fn)
+### <a name="before"></a> before(trackFn, fn)
 
 ```
 import { before } from 'trackpoint-tools'
@@ -38,7 +43,7 @@ onClick('me')
   normal click me
 ```
 
-### after(trackFn, fn)
+### <a name="after"></a>after(trackFn, fn)
 
 ```
 import { after } from 'trackpoint-tools'
@@ -86,13 +91,13 @@ onClick
 
 ```
 
-### once(fn)
+### <a name="once"></a>once(fn)
 
 same as lodash/once
 [lodash/once](https://lodash.com/docs/4.17.4#once)
 
 
-### track(fn)
+### <a name="track"></a>track(fn)
 
 借助es7的decorator提案可以让我们以一种非常优雅的方式使用高阶函数， track用来将普通的class函数包装成decorator
 使用起来非常简单
