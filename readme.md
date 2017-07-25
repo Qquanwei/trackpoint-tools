@@ -17,7 +17,7 @@ npm i trackpoint-tools --save
 
 ```
 class SomeComponent {
-  @track(composeWith(ms => (element) => ajax.pos(url, {ms, name: element.name}), time))
+  @track(composeWith(ms => (element) => ajax.post(url, {ms, name: element.name}), time))
   onClick (element) {
     return element.someMethod()
   }
