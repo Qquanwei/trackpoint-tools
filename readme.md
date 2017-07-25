@@ -9,7 +9,9 @@
 埋点逻辑往往是侵入性的，我们需要将这块代码拆分出去。
 幸运的是es6,es7 给我们提供了可能。
 
-
+```
+npm i trackpoint-tools --save
+```
 
 ## API 列表
 
@@ -17,6 +19,9 @@
 * [after](#after)
 * [once](#once)
 * [track](#track)
+* [nop](#nop)
+* [composeWith](#composeWith)
+* [time](#time)
 
 
 所有的API都满足curryable, 所有的trackFn 都不会影响正常逻辑执行。
@@ -134,6 +139,49 @@ class SomeComponent {
  after
 ```
 
+## <a name="nop"></a> nop()
+
+do nothing , empty function
+
+## <a name="composeWith"></a> composeWith(convergeFn, [ops])
+
+composeWith 类似after, 主要执行收集执行期间性能的操作
+
+```
+class SomeComponent {
+  @track(composeWith(m => console.log(m + 'ms'), [time]))
+  onClick () {
+     ...
+     ...
+     return 0
+  }
+}
+```
+
+->
+
+```
+ somecomponent.onClick() // return 0 . output 100ms
+
+```
+
+## <a name="time"></a> time(fn) -> (...) -> ms
+
+测量普通函数与thenable函数执行时间, 单位毫秒
+
+```
+ time(() => console.log('out'))() // return 1
+```
+
+
 ## 贡献
 
 欢迎fork, 有新的想法可以直接提PR
+
+* build
+
+`npm run build`
+
+* test
+
+`npm run test`
