@@ -1,17 +1,20 @@
 [![Build Status](https://travis-ci.org/Qquanwei/trackpoint-tools.svg?branch=master)](https://travis-ci.org/Qquanwei/trackpoint-tools)
 
-# ²»ÄÜÔÙÈÃÂñµã¼ÌĞøÇÖÈëÎÒÃÇµÄÂß¼­ÁË£¬ÎÒÃÇĞèÒª×öµãÊ²Ã´
+[![npm](https://img.shields.io/npm/v/trackpoint-tools.svg)](https://www.npmjs.com/package/trackpoint-tools)
+
+
+# ä¸èƒ½å†è®©åŸ‹ç‚¹ç»§ç»­ä¾µå…¥æˆ‘ä»¬çš„é€»è¾‘äº†ï¼Œæˆ‘ä»¬éœ€è¦åšç‚¹ä»€ä¹ˆ
 
 ## trackpoint-tools
 
-ÂñµãÂß¼­ÍùÍùÊÇÇÖÈëĞÔµÄ£¬ÎÒÃÇĞèÒª½«Õâ¿é´úÂë²ğ·Ö³öÈ¥¡£
-ĞÒÔËµÄÊÇes6,es7 ¸øÎÒÃÇÌá¹©ÁË¿ÉÄÜ¡£
+åŸ‹ç‚¹é€»è¾‘å¾€å¾€æ˜¯ä¾µå…¥æ€§çš„ï¼Œæˆ‘ä»¬éœ€è¦å°†è¿™å—ä»£ç æ‹†åˆ†å‡ºå»ã€‚
+å¹¸è¿çš„æ˜¯es6,es7 ç»™æˆ‘ä»¬æä¾›äº†å¯èƒ½ã€‚
 
 
 
-## API ÁĞ±í
+## API åˆ—è¡¨
 
-ËùÓĞµÄAPI¶¼Âú×ãcurryable, ËùÓĞµÄtrackFn ¶¼²»»áÓ°ÏìÕı³£Âß¼­Ö´ĞĞ¡£
+æ‰€æœ‰çš„APIéƒ½æ»¡è¶³curryable, æ‰€æœ‰çš„trackFn éƒ½ä¸ä¼šå½±å“æ­£å¸¸é€»è¾‘æ‰§è¡Œã€‚
 
 ### before(trackFn, fn)
 
@@ -91,8 +94,8 @@ same as lodash/once
 
 ### track(fn)
 
-½èÖúes7µÄdecoratorÌá°¸¿ÉÒÔÈÃÎÒÃÇÒÔÒ»ÖÖ·Ç³£ÓÅÑÅµÄ·½Ê½Ê¹ÓÃ¸ß½×º¯Êı£¬ trackÓÃÀ´½«ÆÕÍ¨µÄclassº¯Êı°ü×°³Édecorator
-Ê¹ÓÃÆğÀ´·Ç³£¼òµ¥
+å€ŸåŠ©es7çš„decoratorææ¡ˆå¯ä»¥è®©æˆ‘ä»¬ä»¥ä¸€ç§éå¸¸ä¼˜é›…çš„æ–¹å¼ä½¿ç”¨é«˜é˜¶å‡½æ•°ï¼Œ trackç”¨æ¥å°†æ™®é€šçš„classå‡½æ•°åŒ…è£…æˆdecorator
+ä½¿ç”¨èµ·æ¥éå¸¸ç®€å•
 
 babel plugin: https://github.com/loganfsmyth/babel-plugin-transform-decorators-legacy
 
@@ -126,6 +129,6 @@ class SomeComponent {
  after
 ```
 
-## ¹±Ï×
+## è´¡çŒ®
 
-»¶Ó­fork, ÓĞĞÂµÄÏë·¨¿ÉÒÔÖ±½ÓÌáPR
+æ¬¢è¿fork, æœ‰æ–°çš„æƒ³æ³•å¯ä»¥ç›´æ¥æPR
