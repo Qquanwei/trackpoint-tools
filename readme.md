@@ -78,12 +78,51 @@ onClick
 ```
     normal click
     send after
+
 ```
 
 ### once(fn)
 
 same as lodash/once
 [lodash/once](https://lodash.com/docs/4.17.4#once)
+
+
+### track(fn)
+
+借助es7的decorator提案可以让我们以一种非常优雅的方式使用高阶函数， track用来将普通的class函数包装成decorator
+使用起来非常简单
+
+babel plugin: https://github.com/loganfsmyth/babel-plugin-transform-decorators-legacy
+
+```
+class SomeComponent {
+  @track(before(() => console.log('before')))
+  onClick () {
+    console.log('click')
+  }
+
+  @track(after(() => console.log('after')))
+  onClickAjax () {
+    return ajax.get(...').then(() => {
+        console.log('request done')
+    })
+  }
+}
+```
+
+->
+
+```
+ before
+ click
+```
+
+->
+
+```
+ request done
+ after
+```
 
 ## 贡献
 

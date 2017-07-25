@@ -5,6 +5,7 @@ import {
     attempt,
     isError
 } from 'lodash'
+import propSet from 'lodash/fp/set'
 
 function isThenable (f) {
     return f && isFunction(f.then)
@@ -36,10 +37,23 @@ export const after = curry((trackFn, fn) => (...args) => {
     return r
 })
 
-export once
+// track by decorator
+/* class SomeComponent {
+ *     @track(before(() => console.log('hello, trackpoint')))
+ *     onClick = () => {
+ *         ...
+ *     }
+ * }*/
+export const track = curry(partical => (target, key, descriptor) => {
+    return propSet('value', partical(descriptor.value), descriptor)
+})
+
+// do work nothing
+export const nop = () => {}
 
 export default {
     before,
     after,
-    once
+    track,
+    nop
 }
