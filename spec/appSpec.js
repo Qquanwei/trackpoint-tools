@@ -143,6 +143,13 @@ describe('trackpoint time', function () {
         expect(isFunction(tp.time)).toBe(true)
     })
 
+    it ('should be measure normal function', function () {
+        const time = tp.time
+        const ms = time((s) => 'out' + 'pi' + 'ss' + s)(100)
+
+        expect(ms < 10).toBe(true)
+    })
+
     it ('should can test ms', function (done) {
         const composeWith = tp.composeWith
         const time = tp.time
