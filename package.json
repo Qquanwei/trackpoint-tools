@@ -17,8 +17,7 @@
   },
   "homepage": "https://github.com/Qquanwei/trackpoint-tools",
   "dependencies": {
-    "lodash": "^4.17.4",
-    "ramda": "^0.24.1"
+    "lodash": "^4.17.4"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
