@@ -7,6 +7,7 @@ import _once from 'lodash/fp/once'
 import propSet from 'lodash/fp/set'
 import reduce from 'lodash/fp/reduce'
 import memoize from 'lodash/fp/memoize'
+import mapValues from 'lodash/fp/mapValues'
 
 function isThenable (f) {
     return f && isFunction(f.then)
@@ -46,6 +47,9 @@ export const after = curry((trackFn, fn) => (...args) => {
  *     }
  * }*/
 export const track = curry(partical => (target, key, descriptor) => {
+    if (!isFunction (partical)) {
+        throw new Error('trackFn is not a function ' + partical)
+    }
     return propSet('value', partical(descriptor.value), descriptor)
 })
 
@@ -88,6 +92,17 @@ export const time = (fn) => (...args) => {
     return +Date.now() - begin
 }
 
+export const evolve = curry(evols => fn => (...args) => {
+    const memoizeFn = memoize(fn)
+    return mapValues(function (value) {
+        return value(memoizeFn).apply(null, args)
+    }, evols)
+})
+
+export const identity = curry(fn => (...args) => {
+    return fn.apply(null, args)
+})
+
 // do work nothing
 export const nop = () => {}
 
@@ -100,5 +115,7 @@ export default {
     nop,
     once,
     composeWith,
-    time
+    time,
+    evolve,
+    identity
 }

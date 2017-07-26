@@ -32,10 +32,14 @@ class SomeComponent {
 * [track](#track)
 * [nop](#nop)
 * [composeWith](#composeWith)
+* [evolve](#evolve)
 * [time](#time)
+* [identity](#identity)
 
 
 所有的API都满足curryable, 所有的trackFn 都不会影响正常逻辑执行。
+
+trackFn 指实际执行逻辑的跟踪函数， fn为普通的业务函数。
 
 ### <a name="before"></a> before(trackFn, fn)
 
@@ -156,7 +160,7 @@ do nothing , empty function
 
 ### <a name="composeWith"></a> composeWith(convergeFn, [ops])
 
-composeWith 类似after, 主要执行收集执行期间性能的操作
+composeWith 类似after, 主要执行收集执行期间性能的操作, 并将参数传给普通trackFn更高一阶函数
 
 ops会被展开为 `fn -> (...args) -> {}`, 执行顺序为从右到左，如果只有一项操作
 可省略数组直接传入ops函数
@@ -180,6 +184,42 @@ class SomeComponent {
 
 ```
 
+### <a name="evolve"></a> evolve(evols)
+
+evols是一个求值对象，value为实际求值操作(例如time, identity).
+与composeWith结合使用.
+
+例如
+
+```
+const evols = {
+  timeMs: trackpoint.time,
+  value: trackpoint.identity
+}
+
+const trackFn = ({timeMs, value}) => (...args) => {
+  console.log('timeMs ', timeMs)
+  console.log('value ', value)
+}
+
+const evolve = trackpoint,evolve
+
+class SomeComponent {
+  @track(composeWith(trackFn, evolve(evols)))
+  onClick() {
+    // some sync operation, about 300ms
+    return 101
+  }
+}
+```
+
+output->
+
+```
+timeMs 301
+value 101
+```
+
 ### <a name="time"></a> time(fn) -> (...) -> ms
 
 测量普通函数与thenable函数执行时间, 单位毫秒
@@ -188,6 +228,9 @@ class SomeComponent {
  time(() => console.log('out'))() // return 1
 ```
 
+### <a name="identity"></a> identity(fn) -> (...) -> value
+
+输出fn的执行结果
 
 
 ## TL;DR
