@@ -168,7 +168,7 @@ ops会被展开为 `fn -> (...args) -> {}`, 执行顺序为从右到左，如果
 
 ```
 class SomeComponent {
-  @track(composeWith(m => console.log(m + 'ms'), [time]))
+  @track(composeWith(m => (...args) => console.log(m + 'ms'), [time]))
   onClick () {
      ...
      ...
