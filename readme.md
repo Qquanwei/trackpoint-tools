@@ -189,6 +189,9 @@ class SomeComponent {
 evols是一个求值对象，value为实际求值操作(例如time, identity).
 与composeWith结合使用.
 
+注意，evolve中每个操作都有可能跟踪fn，但是fn只能执行一次，所以只有fn第一次执行才能进行有效的性能计算。
+所以需要将性能计算写在evols的第一行(但其实顺序并不能保障 [ref](https://github.com/lodash/lodash/blob/npm/mapValues.js#L27))。
+
 例如
 
 ```
