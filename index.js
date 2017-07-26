@@ -81,7 +81,14 @@ export const composeWith = curry((convergeFn, ops) => {
         return memoizeFn.apply(this, args)
     }
 })
-
+export const createCounter = () => {
+  let scopeCounter = 0
+  return fn => (...args) => {
+    fn.apply(null, args)
+    scopeCounter = scopeCounter + 1
+    return scopeCounter
+  }
+}
 export const time = (fn) => (...args) => {
     const begin = +Date.now()
     const result = fn.apply(this, args)
@@ -100,7 +107,7 @@ export const evolve = curry(evols => fn => (...args) => {
 })
 
 export const identity = curry(fn => (...args) => {
-    return fn.apply(null, args)
+  return fn.apply(null, args)
 })
 
 // do work nothing
@@ -109,13 +116,14 @@ export const nop = () => {}
 export const once = _once
 
 export default {
-    before,
-    after,
-    track,
-    nop,
-    once,
-    composeWith,
-    time,
-    evolve,
-    identity
+  before,
+  after,
+  track,
+  nop,
+  once,
+  composeWith,
+  time,
+  evolve,
+  identity,
+  createCounter
 }

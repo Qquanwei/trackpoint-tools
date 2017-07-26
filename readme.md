@@ -35,6 +35,7 @@ class SomeComponent {
 * [evolve](#evolve)
 * [time](#time)
 * [identity](#identity)
+* [createCounter](#createCounter)
 
 
 所有的API都满足curryable, 所有的trackFn 都不会影响正常逻辑执行。
@@ -234,6 +235,27 @@ value 101
 ### <a name="identity"></a> identity(fn) -> (...) -> value
 
 输出fn的执行结果
+
+### <a name="createCounter"></a> createCounter() -> (fn) -> (...) -> value
+
+创建一个计数器，可以用来统计fn函数被调用的次数
+
+```
+const trackFn = ({count}) => (...args) => console.log('count is:', count)
+const fn = () => { console.log('why always click me?')}
+
+
+const composeFn = composeWith(trackFn, evolve({count: createCounter()}))(fn)
+
+composeFn()
+// why always click me?
+// count is 1
+composeFn()
+// why always click me?
+// count is 2
+...
+...
+```
 
 
 ## TL;DR

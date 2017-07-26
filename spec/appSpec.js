@@ -274,3 +274,24 @@ describe('trackpoint identity', function () {
         expect((new SomeComponent).onClick()).toEqual('hello,world')
     })
 })
+
+describe ('trackpoint createCounter', function () {
+    it ('should be a function', function () {
+        expect(isFunction(tp.createCounter)).toBe(true)
+    })
+
+    it ('should be count well', function () {
+        const spy = jasmine.createSpy('fn')
+        const { composeWith, evolve, before, createCounter } = tp
+
+        const composeFn = composeWith(
+            ({count}) => (...args) => expect(count).toEqual(spy.calls.count()),
+            evolve({ count: createCounter()})
+        )(() => spy())
+
+        let i =30
+        while (i--) {
+            composeFn(i)
+        }
+    })
+})
