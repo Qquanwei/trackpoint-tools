@@ -232,8 +232,8 @@ describe('trackpoint evolve', function () {
             expect(spy.calls.count()).toEqual(1)
             expect(time1 <= 100).toBe(true)
             expect(time1 >= 0).toBe(true)
-            expect(time2).toEqual(0)
-            expect(time3).toEqual(0)
+            expect(time2 <= 5).toBe(true)
+            expect(time3 <= 5).toBe(true)
         }
 
         class SomeComponent {
