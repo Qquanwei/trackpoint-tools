@@ -1,4 +1,5 @@
 import curry from 'lodash/fp/curry'
+import curryN from 'lodash/fp/curryN'
 import attempt from 'lodash/fp/attempt'
 import isError from 'lodash/fp/isError'
 import isFunction from 'lodash/fp/isFunction'
@@ -21,22 +22,22 @@ function evalWithNoCatch(fn, args) {
 }
 
 // eval trackFn before fn
-export const before = curry((trackFn, fn) => (...args) => {
-    isFunction(trackFn) && evalWithNoCatch(trackFn, args)
-    return fn.apply(this, args)
+export const before = curryN(2, (trackFn, fn, target) => (...args) => {
+  isFunction(trackFn) && evalWithNoCatch(trackFn, args)
+  return fn.apply(target, args)
 })
 
 // eval trackFn after fn
-export const after = curry((trackFn, fn) => (...args) => {
-    const r = fn.apply(this, args)
-    if (isThenable(r)) {
-        return r.then(rr => {
-            evalWithNoCatch(trackFn, args)
-            return rr
-        })
-    }
-    evalWithNoCatch(trackFn, args)
-    return r
+export const after = curryN(2, (trackFn, fn, target) => (...args) => {
+  const r = fn.apply(target, args)
+  if (isThenable(r)) {
+    return r.then(rr => {
+      evalWithNoCatch(trackFn, args)
+      return rr
+    })
+  }
+  evalWithNoCatch(trackFn, args)
+  return r
 })
 
 // track by decorator
@@ -46,12 +47,17 @@ export const after = curry((trackFn, fn) => (...args) => {
  *         ...
  *     }
  * }*/
-export const track = curry(partical => (target, key, descriptor) => {
+export const track = function (partical) {
+  return function (target, key, descriptor) {
     if (!isFunction (partical)) {
-        throw new Error('trackFn is not a function ' + partical)
+      throw new Error('trackFn is not a function ' + partical)
     }
-    return propSet('value', partical(descriptor.value), descriptor)
-})
+    const value = function (...args) {
+      return partical.call(this, descriptor.value, this).apply(this, args)
+    }
+    return propSet('value', value, descriptor)
+  }
+}
 
 // composeWith convergeFn by ops[array]
 export const composeWith = curry((convergeFn, ops) => {
