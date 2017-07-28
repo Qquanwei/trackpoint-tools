@@ -28,8 +28,8 @@ export const before = curryN(2, (trackFn, fn, target) => (...args) => {
 })
 
 // eval trackFn after fn
-export const after = curryN(2, (trackFn, fn, target) => (...args) => {
-  const r = fn.apply(target, args)
+export const after = curryN(2, (trackFn, fn, target) => function (...args) {
+  const r = fn.apply(target || this, args)
   if (isThenable(r)) {
     return r.then(rr => {
       evalWithNoCatch(trackFn, args)
@@ -61,36 +61,39 @@ export const track = function (partical) {
 
 // composeWith convergeFn by ops[array]
 export const composeWith = curry((convergeFn, ops) => {
-    if (isFunction (ops)) {
-        ops = [ops]
-    }
+  if (isFunction (ops)) {
+    ops = [ops]
+  }
 
-    // type check
-    if (!isFunction(convergeFn) ||!isArray(ops) ) {
-        return console.error('args type incorrect, expect convergeFn is function and ops is array')
-    }
+  // type check
+  if (!isFunction(convergeFn) ||!isArray(ops) ) {
+    return console.error('args type incorrect, expect convergeFn is function and ops is array')
+  }
 
-    const compose = reduce(function (acc, i) {
-        if (!acc) {
-            return acc || i
-        }
-        return i(acc)
-    }, null)
+  const compose = function (ops) {
+    const self = this
+    return reduce(function (acc, i) {
+      if (!acc) {
+        return acc || i
+      }
+      return i.call(self, acc)
+    }, null, ops)
+  }
 
 
-    return (fn) => (...args) => {
-        const memoizeFn = memoize(fn)
-        const _r = convergeFn(
-            compose(ops)
-                .apply(null, [memoizeFn])
-                .apply(null, args)).apply(this, args)
-        return memoizeFn.apply(this, args)
-    }
+  return curryN(1, (fn, target) => function (...args) {
+    const memoizeFn = memoize(fn)
+    const _r = convergeFn(
+      compose(ops)
+        .apply(target, [memoizeFn])
+        .apply(target, args)).apply(target, args)
+    return memoizeFn.apply(target, args)
+  })
 })
 export const createCounter = () => {
   let scopeCounter = 0
-  return fn => (...args) => {
-    fn.apply(null, args)
+  return fn => function (...args) {
+    fn.apply(this, args)
     scopeCounter = scopeCounter + 1
     return scopeCounter
   }
@@ -105,15 +108,15 @@ export const time = (fn) => (...args) => {
     return +Date.now() - begin
 }
 
-export const evolve = curry(evols => fn => (...args) => {
+export const evolve = curry(evols => fn => function (...args) {
     const memoizeFn = memoize(fn)
     return mapValues(function (value) {
-        return value(memoizeFn).apply(null, args)
+        return value(memoizeFn).apply(this, args)
     }, evols)
 })
 
-export const identity = curry(fn => (...args) => {
-  return fn.apply(null, args)
+export const identity = curry(fn => function (...args) {
+  return fn.apply(this, args)
 })
 
 // do work nothing

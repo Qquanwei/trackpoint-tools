@@ -175,116 +175,155 @@ describe('trackpoint compose', function () {
 })
 
 describe('trackpoint time', function () {
-    it ('should have time', function () {
-        expect(isFunction(tp.time)).toBe(true)
+  it ('should have time', function () {
+    expect(isFunction(tp.time)).toBe(true)
+  })
+
+  it ('should be measure normal function', function () {
+    const time = tp.time
+    const ms = time((s) => 'out' + 'pi' + 'ss' + s)(100)
+
+    expect(ms < 10).toBe(true)
+  })
+
+  it ('should can test ms', function (done) {
+    const composeWith = tp.composeWith
+    const time = tp.time
+    const after = tp.after
+    const nop = tp.nop
+    const track = tp.track
+
+    const spy = jasmine.createSpy('fn')
+    const fn = (ns) => {
+      spy(ns)
+      return new Promise(resolve => setTimeout(() => resolve(ns), ns))
+    }
+
+    let _MS
+    const printMs = ms => (...args) => _MS = ms
+
+    class SomeComponent {
+      @track(composeWith(printMs, time))
+      onClick (ms) {
+        return fn(ms)
+      }
+    }
+
+    (new SomeComponent).onClick(100).then((ms) => {
+      _MS.then((_MS_) => {
+        expect(spy.calls.count()).toEqual(1)
+        expect(spy).toHaveBeenCalledWith(100)
+        expect(ms).toEqual(100)
+        expect(_MS_ >= 100).toBe(true)
+        expect(_MS_ <= 120).toBe(true)
+        done()
+      })
     })
+  })
 
-    it ('should be measure normal function', function () {
-        const time = tp.time
-        const ms = time((s) => 'out' + 'pi' + 'ss' + s)(100)
-
-        expect(ms < 10).toBe(true)
-    })
-
-    it ('should can test ms', function (done) {
-        const composeWith = tp.composeWith
-        const time = tp.time
-        const after = tp.after
-        const nop = tp.nop
-        const track = tp.track
-
-        const spy = jasmine.createSpy('fn')
-        const fn = (ns) => {
-            spy(ns)
-            return new Promise(resolve => setTimeout(() => resolve(ns), ns))
-        }
-
-        let _MS
-        const printMs = ms => (...args) => _MS = ms
-
-        class SomeComponent {
-            @track(composeWith(printMs, time))
-            onClick (ms) {
-                return fn(ms)
-            }
-        }
-
-        (new SomeComponent).onClick(100).then((ms) => {
-            _MS.then((_MS_) => {
-                expect(spy.calls.count()).toEqual(1)
-                expect(spy).toHaveBeenCalledWith(100)
-                expect(ms).toEqual(100)
-                expect(_MS_ >= 100).toBe(true)
-                expect(_MS_ <= 120).toBe(true)
-                done()
-            })
-        })
-    })
+  it ('should be not change this pointer', function () {
+    const { track, after } = tp
+    class SomeComponent {
+      constructor () {
+        this.name = 'stub'
+      }
+      @track(after(function () {
+        expect(this.name).toEqual('stub')
+      }))
+      onClick () {
+        return this.name
+      }
+    }
+    expect((new SomeComponent).onClick()).toEqual('stub')
+  })
 })
 
 
 describe('trackpoint evolve', function () {
-    it ('should be a function', function () {
-        expect(isFunction(tp.evolve)).toBe(true)
-    })
+  it ('should be a function', function () {
+    expect(isFunction(tp.evolve)).toBe(true)
+  })
 
-    it ('should be work with single key:value', function () {
-        const evolve = tp.evolve
-        const composeWith = tp.composeWith
-        const track = tp.track
+  it ('should be work with single key:value', function () {
+    const evolve = tp.evolve
+    const composeWith = tp.composeWith
+    const track = tp.track
 
-        const evols = {
-            time: tp.time
+    const evols = {
+      time: tp.time
+    }
+    const spy = jasmine.createSpy('fn')
+    const trackFn = ({time}) => (...args) => {
+      expect(time <= 10).toBe(true)
+      expect(time >= 0).toBe(true)
+      expect(spy.calls.count()).toEqual(1)
+    }
+
+    class SomeComponent  {
+      @track(composeWith(trackFn, evolve(evols)))
+      onClick () {
+        spy()
+        return 100;
+      }
+    }
+
+    expect((new SomeComponent).onClick()).toEqual(100)
+  })
+
+  it ('should be work with complicate evols', function () {
+    const evolve = tp.evolve
+    const composeWith = tp.composeWith
+    const evols = {
+      time1: tp.time,
+      time2: tp.time,
+      time3: tp.time
+    }
+    const track = tp.track
+    const spy = jasmine.createSpy('fn')
+    const trackFn = ({time1, time2, time3}) => (...args) => {
+      expect(spy.calls.count()).toEqual(1)
+      expect(time1 <= 100).toBe(true)
+      expect(time1 >= 0).toBe(true)
+      expect(time2 <= 5).toBe(true)
+      expect(time3 <= 5).toBe(true)
+    }
+
+    class SomeComponent {
+      @track(composeWith(trackFn, evolve(evols)))
+      onClick() {
+        let i = 10000000;
+        while(i--);
+        spy()
+        return 301;
+      }
+    }
+
+
+    expect((new SomeComponent).onClick()).toEqual(301)
+  })
+
+  it ('should be not change this pointer', function () {
+    const { track, evolve, composeWith, identity } = tp
+
+    class SomeComponent {
+      constructor () {
+        this.name = 'stub'
+      }
+      @track(composeWith(function ({value}) {
+        return function (v2) {
+          expect(v2).toEqual('param')
+          expect(value).toEqual('stub')
         }
-        const spy = jasmine.createSpy('fn')
-        const trackFn = ({time}) => (...args) => {
-            expect(time <= 10).toBe(true)
-            expect(time >= 0).toBe(true)
-            expect(spy.calls.count()).toEqual(1)
-        }
+      }, evolve({
+        value: identity
+      })))
+      onClick () {
+        return this.name
+      }
+    }
 
-        class SomeComponent  {
-            @track(composeWith(trackFn, evolve(evols)))
-            onClick () {
-                spy()
-                return 100;
-            }
-        }
-
-        expect((new SomeComponent).onClick()).toEqual(100)
-    })
-
-    it ('should be work with complicate evols', function () {
-        const evolve = tp.evolve
-        const composeWith = tp.composeWith
-        const evols = {
-            time1: tp.time,
-            time2: tp.time,
-            time3: tp.time
-        }
-        const track = tp.track
-        const spy = jasmine.createSpy('fn')
-        const trackFn = ({time1, time2, time3}) => (...args) => {
-            expect(spy.calls.count()).toEqual(1)
-            expect(time1 <= 100).toBe(true)
-            expect(time1 >= 0).toBe(true)
-            expect(time2 <= 5).toBe(true)
-            expect(time3 <= 5).toBe(true)
-        }
-
-        class SomeComponent {
-            @track(composeWith(trackFn, evolve(evols)))
-            onClick() {
-                let i = 10000000;
-                while(i--);
-                spy()
-                return 301;
-            }
-        }
-
-
-        expect((new SomeComponent).onClick()).toEqual(301)
-    })
+    expect((new SomeComponent).onClick('param')).toEqual('stub')
+  })
 })
 
 
