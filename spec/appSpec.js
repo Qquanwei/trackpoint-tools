@@ -43,7 +43,9 @@ describe('trackpoint before', function () {
         this.name = 'thispoint'
       }
 
-      @track(before(() => {}))
+      @track(before(function () {
+        expect(this.name).toEqual('thispoint')
+      }))
       onClick () {
         return this
       }
@@ -95,7 +97,9 @@ describe('trackpoint after', function () {
         this.name = 'thispoint'
       }
 
-      @track(after(() => {}))
+      @track(after(function (){
+        expect(this.name).toEqual('thispoint')
+      }))
       onClick () {
         return this
       }
@@ -126,6 +130,22 @@ describe('trackpoint track', function () {
     const component = new SomeComponent
     expect(component.onClick).not.toThrow()
     expect(soldier).toEqual(['trackFn','fn'])
+  })
+
+  it ('should be not change this pointer', function () {
+    class SomeComponent {
+      constructor () {
+        this.name = 'thispoint'
+      }
+      @tp.track(tp.before(function () {
+        expect(this.name).toEqual('thispoint')
+      }))
+      onClick () {
+        return this.name
+      }
+    }
+
+    expect((new SomeComponent).onClick()).toEqual('thispoint')
   })
 })
 

@@ -13,6 +13,7 @@ import mapValues from 'lodash/fp/mapValues'
 function isThenable (f) {
     return f && isFunction(f.then)
 }
+// will be lost this scope
 function evalWithNoCatch(fn, args) {
     const _r = attempt(fn, args)
     if (isError(_r)) {
@@ -23,6 +24,7 @@ function evalWithNoCatch(fn, args) {
 
 // eval trackFn before fn
 export const before = curryN(2, (trackFn, fn, target) => (...args) => {
+  trackFn = trackFn.bind(target)
   isFunction(trackFn) && evalWithNoCatch(trackFn, args)
   return fn.apply(target, args)
 })
@@ -30,6 +32,9 @@ export const before = curryN(2, (trackFn, fn, target) => (...args) => {
 // eval trackFn after fn
 export const after = curryN(2, (trackFn, fn, target) => function (...args) {
   const r = fn.apply(target || this, args)
+
+  trackFn = trackFn.bind(target)
+
   if (isThenable(r)) {
     return r.then(rr => {
       evalWithNoCatch(trackFn, args)
@@ -109,10 +114,11 @@ export const time = (fn) => (...args) => {
 }
 
 export const evolve = curry(evols => fn => function (...args) {
-    const memoizeFn = memoize(fn)
-    return mapValues(function (value) {
-        return value(memoizeFn).apply(this, args)
-    }, evols)
+  const self = this
+  const memoizeFn = memoize(fn)
+  return mapValues(function (value) {
+    return value(memoizeFn).apply(self, args)
+  }, evols)
 })
 
 export const identity = curry(fn => function (...args) {
