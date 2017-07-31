@@ -259,6 +259,19 @@ composeFn()
 
 ## 关于 this
 
+使用
+```
+class SomeComponent {
+  @track(before(function () {
+  }))
+  onClick () {
+  }
+}
+```
+会自动将this绑定到before的函数体中。
+
+注意： JS中次数如果有箭头函数会绑定到全局的this(null), 所以在此处不建议使用箭头函数
+
 ## TL;DR
 
 推荐使用es7的decorator
