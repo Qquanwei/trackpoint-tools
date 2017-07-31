@@ -52,16 +52,14 @@ export const after = curryN(2, (trackFn, fn) => function (...args) {
  *         ...
  *     }
  * }*/
-export const track = function (partical) {
-  return function (target, key, descriptor) {
-    if (!isFunction (partical)) {
-      throw new Error('trackFn is not a function ' + partical)
-    }
-    const value = function (...args) {
-      return partical.call(this, descriptor.value, this).apply(this, args)
-    }
-    return propSet('value', value, descriptor)
+export const track = partical => (target, key, descriptor) => {
+  if (!isFunction (partical)) {
+    throw new Error('trackFn is not a function ' + partical)
   }
+  const value = function (...args) {
+    return partical.call(this, descriptor.value, this).apply(this, args)
+  }
+  return propSet('value', value, descriptor)
 }
 
 // composeWith convergeFn by ops[array]
@@ -75,15 +73,12 @@ export const composeWith = curry((convergeFn, ops) => {
     return console.error('args type incorrect, expect convergeFn is function and ops is array')
   }
 
-  const compose = function (ops) {
-    const self = this
-    return reduce(function (acc, i) {
-      if (!acc) {
-        return acc || i
-      }
-      return i.call(self, acc)
-    }, null, ops)
-  }
+  const compose = reduce((acc, i) => {
+    if (!acc) {
+      return acc || i
+    }
+    return i.call(null, acc)
+  }, null)
 
 
   return curryN(1, (fn, target) => function (...args) {
@@ -91,7 +86,8 @@ export const composeWith = curry((convergeFn, ops) => {
     const _r = convergeFn(
       compose(ops)
         .apply(this, [memoizeFn])
-        .apply(this, args)).apply(target, args)
+        .apply(this, args)
+    ).apply(this, args)
     return memoizeFn.apply(this, args)
   })
 })
@@ -103,7 +99,7 @@ export const createCounter = () => {
     return scopeCounter
   }
 }
-export const time = (fn) => function (...args) {
+export const time = fn => function (...args) {
     const begin = +Date.now()
     const result = fn.apply(this, args)
     // result will be cached by memoize, so return new promise
@@ -116,7 +112,7 @@ export const time = (fn) => function (...args) {
 export const evolve = curry(evols => fn => function (...args) {
   const self = this
   const memoizeFn = memoize(fn)
-  return mapValues(function (value) {
+  return mapValues((value) => {
     return value(memoizeFn).apply(self, args)
   }, evols)
 })
