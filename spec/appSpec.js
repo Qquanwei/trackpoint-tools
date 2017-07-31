@@ -192,6 +192,23 @@ describe('trackpoint compose', function () {
 
         expect(composeFn(10)).toEqual(10)
     })
+
+  it ('should be not change this pointer', function () {
+    const { track, composeWith, identity, before } = tp
+    class SomeComponent {
+      constructor () {
+        this.name = 'thispoint'
+      }
+      @track(composeWith(value => function () {
+        expect(value).toEqual('thispoint')
+        expect(this.name).toEqual('thispoint')
+      }, identity))
+      onClick () {
+        return this.name
+      }
+    }
+    expect((new SomeComponent).onClick()).toEqual('thispoint')
+  })
 })
 
 describe('trackpoint time', function () {

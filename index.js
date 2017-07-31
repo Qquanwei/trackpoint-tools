@@ -23,17 +23,17 @@ function evalWithNoCatch(fn, args) {
 }
 
 // eval trackFn before fn
-export const before = curryN(2, (trackFn, fn, target) => (...args) => {
-  trackFn = trackFn.bind(target)
+export const before = curryN(2, (trackFn, fn) => function (...args) {
+  trackFn = trackFn.bind(this)
   isFunction(trackFn) && evalWithNoCatch(trackFn, args)
-  return fn.apply(target, args)
+  return fn.apply(this, args)
 })
 
 // eval trackFn after fn
-export const after = curryN(2, (trackFn, fn, target) => function (...args) {
-  const r = fn.apply(target || this, args)
+export const after = curryN(2, (trackFn, fn) => function (...args) {
+  const r = fn.apply(this, args)
 
-  trackFn = trackFn.bind(target)
+  trackFn = trackFn.bind(this)
 
   if (isThenable(r)) {
     return r.then(rr => {
@@ -90,9 +90,9 @@ export const composeWith = curry((convergeFn, ops) => {
     const memoizeFn = memoize(fn)
     const _r = convergeFn(
       compose(ops)
-        .apply(target, [memoizeFn])
-        .apply(target, args)).apply(target, args)
-    return memoizeFn.apply(target, args)
+        .apply(this, [memoizeFn])
+        .apply(this, args)).apply(target, args)
+    return memoizeFn.apply(this, args)
   })
 })
 export const createCounter = () => {
@@ -103,7 +103,7 @@ export const createCounter = () => {
     return scopeCounter
   }
 }
-export const time = (fn) => (...args) => {
+export const time = (fn) => function (...args) {
     const begin = +Date.now()
     const result = fn.apply(this, args)
     // result will be cached by memoize, so return new promise
