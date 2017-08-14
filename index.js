@@ -13,19 +13,15 @@ import mapValues from 'lodash/fp/mapValues'
 function isThenable (f) {
     return f && isFunction(f.then)
 }
-// will be lost this scope
-function evalWithNoCatch(fn, args) {
-    const _r = attempt(fn, args)
-    if (isError(_r)) {
-        console.error(_r)
-    }
-    return _r
-}
 
 // eval trackFn before fn
 export const before = curryN(2, (trackFn, fn) => function (...args) {
-  trackFn = trackFn.bind(this)
-  isFunction(trackFn) && evalWithNoCatch(trackFn, args)
+  try {
+    isFunction(trackFn) && trackFn.apply(this, args)
+  } catch(e) {
+    console.error(e)
+  }
+
   return fn.apply(this, args)
 })
 
@@ -33,15 +29,24 @@ export const before = curryN(2, (trackFn, fn) => function (...args) {
 export const after = curryN(2, (trackFn, fn) => function (...args) {
   const r = fn.apply(this, args)
 
-  trackFn = trackFn.bind(this)
+  const self = this
+
+  const evalF = () => {
+    try {
+      trackFn.apply(self, args)
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   if (isThenable(r)) {
     return r.then(rr => {
-      evalWithNoCatch(trackFn, args)
+      evalF()
       return rr
     })
   }
-  evalWithNoCatch(trackFn, args)
+
+  evalF()
   return r
 })
 

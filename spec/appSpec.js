@@ -55,6 +55,18 @@ describe('trackpoint before', function () {
     expect(component.onClick()).not.toEqual(undefined)
     expect(component.onClick()).toEqual(component)
   })
+
+  it ('should with arguments', function () {
+    const { before } = tp
+    let a = []
+    before((name) => {
+      a.push(name)
+    }, (name) => {
+      a.push(name)
+    })('stubName')
+
+    expect(a).toEqual(['stubName', 'stubName'])
+  })
 })
 
 describe('trackpoint after', function () {
@@ -108,6 +120,18 @@ describe('trackpoint after', function () {
     expect(component.onClick()).not.toEqual(null)
     expect(component.onClick()).not.toEqual(undefined)
     expect(component.onClick()).toEqual(component)
+  })
+
+  it ('should with arguments', function () {
+    const {after} = tp
+    let a = []
+    after((name) => {
+      a.push(name)
+    }, (name) => {
+      a.push(name)
+    })('stubName')
+
+    expect(a).toEqual(['stubName', 'stubName'])
   })
 })
 
