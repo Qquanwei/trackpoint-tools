@@ -24,6 +24,8 @@ class SomeComponent {
 }
 ```
 
+示例: https://codesandbox.io/s/wqxr0j2qj5
+
 ## API 列表
 
 * [before](#before)
