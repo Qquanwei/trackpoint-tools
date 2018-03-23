@@ -1,0 +1,12 @@
+# as all file
+[*]
+indent_size = 2
+indent_style = space
+end_of_line = lf
+insert_final_newline = true
+
+# 移除所有尾部空白字符
+trim_trailing_whitespace: true
+
+[*.{js,css}]
+charset = utf-8

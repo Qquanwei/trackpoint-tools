@@ -64,6 +64,14 @@ export const track = partical => (target, key, descriptor) => {
   const value = function (...args) {
     return partical.call(this, descriptor.value, this).apply(this, args)
   }
+  if (descriptor.initializer) {
+    return propSet('initializer', function() {
+      const value = descriptor.initializer.apply(this);
+      return function (...args) {
+        return partical.call(this, value, this).apply(this, args);
+      }
+    }, descriptor);
+  }
   return propSet('value', value, descriptor)
 }
 

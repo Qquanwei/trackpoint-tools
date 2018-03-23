@@ -431,3 +431,27 @@ describe ('trackpoint createCounter', function () {
         }
     })
 })
+
+describe ('trackpoint work with class filed', function() {
+    it ('should decorator class filed', function() {
+        const track = tp.track
+        const identity = tp.identity
+        const composeWith = tp.composeWith
+
+        let count = 0;
+        const trackFn = (value) => (...args) => {
+            count = 2;
+            expect(value).toEqual('hello,world')
+        }
+        class SomeComponent {
+            @track(composeWith(trackFn, identity))
+            onClick = () => {
+                count = 1;
+                return 'hello,world'
+            }
+        };
+
+        expect((new SomeComponent).onClick()).toEqual('hello,world')
+        expect(count).toBe(2);
+    })
+})
