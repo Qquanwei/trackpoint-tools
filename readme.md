@@ -24,8 +24,8 @@ class SomeComponent {
 }
 ```
 
-示例: https://codesandbox.io/s/wqxr0j2qj5
-
+示例(React 全): https://codesandbox.io/s/wqxr0j2qj5
+示例(Vue 演示):https://codesandbox.io/s/oxxw580yz5
 ## API 列表
 
 * [before](#before)
