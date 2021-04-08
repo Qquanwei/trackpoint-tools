@@ -1,8 +1,9 @@
 {
   "name": "trackpoint-tools",
-  "version": "0.0.10",
+  "version": "0.1.0",
   "description": "",
-  "main": "lib/bundle.js",
+  "main": "lib/index.js",
+  "types": "./index.d.ts",
   "scripts": {
     "test": "jasmine",
     "build": "babel index.js --out-file ./lib/index.js"
