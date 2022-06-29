@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Qquanwei/trackpoint-tools.svg?branch=master)](https://travis-ci.org/Qquanwei/trackpoint-tools)
+[![Node.js CI](https://github.com/Qquanwei/trackpoint-tools/actions/workflows/node.js.yml/badge.svg)](https://github.com/Qquanwei/trackpoint-tools/actions/workflows/node.js.yml)
 [![npm](https://img.shields.io/npm/v/trackpoint-tools.svg)](https://www.npmjs.com/package/trackpoint-tools)
 
 
