@@ -208,7 +208,7 @@ const trackFn = ({timeMs, value}) => (...args) => {
   console.log('value ', value)
 }
 
-const evolve = trackpoint,evolve
+const evolve = trackpoint.evolve
 
 class SomeComponent {
   @track(composeWith(trackFn, evolve(evols)))
